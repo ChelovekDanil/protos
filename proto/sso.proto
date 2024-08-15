@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+// текущий пакет - то есть все сообщение и ервисы определенные в этом файле будут пренадлежать пакету auth
+package auth;
+
+// go_package - указывает что файл должен быть сгенерирован для golang
+// "danil..." - это имя пакета в котором будет сгенерированный код
+option go_package = "protos/sso";
+
+service Auth {
+	rpc Register (RegisterRequest) returns (RegisterResponse);
+	rpc Login (LoginRequest) returns (LoginResponse);
+}
+
+message RegisterRequest {
+	string email = 1;
+	string password = 2;
+}
+
+message RegisterResponse {
+	int64 user_id = 1;
+}
+
+message LoginRequest {
+	string email = 1;
+	string password = 2;
+	int32 app_id = 3;
+}
+
+message LoginResponse {
+	string token = 1;
+}
+
+// код для компиляции в go файлы: protoc -I proto proto/sso.proto --go_out=./gen/go/ --go_opt=paths=source_relative --go-grpc_out=./gen/go/ --go-grpc_opt=paths=source_relative
+// -I proto - указывает путь к директории в которой лежат proto файлы
+// proto/sso.proto - указывает на конкретный proto файл, который будет скомпилирован
+// --go_out=./gen/go/ - указывает куда будет сгенерированны proto файлы
+// --go_opt=paths=source_relative - указывает как создавать имена пакетов, source_relative - означает что имена будет такими же как в proto файле
+// --go-grpc_out=./gen/go/ - указывает куда будет скомпилированны файлы proto для rpc 
+// --go-grpc_opt=paths=source_relative - указывает как создавать имена пакетов, source_relative - означает что имена будет такими же как в proto файле
